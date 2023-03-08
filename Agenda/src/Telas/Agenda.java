@@ -4,18 +4,22 @@
  */
 package Telas;
 
+import banco.BancoJDBC;
 import java.awt.FlowLayout;
 import javax.swing.JDialog;
 import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.sql.SQLException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.table.DefaultTableModel;
+import model.Pessoa;
   
 // JFrame frame; // tela inicial. pode sfechar o programa, não pode ser modal
 //Jdialog dialog; //Não fecha o sistema, pode ser modal
@@ -61,12 +65,9 @@ public class Agenda extends JFrame{
         
         Retorno.addRow(Infos);
         
-        PID.setText("");
-        PNome.setText("");
-        PDNS.setText("");
-        PAltura.setText("");
-        PPeso.setText("");
+        
     }
+    
     
     
     public Agenda(){
@@ -102,26 +103,37 @@ public class Agenda extends JFrame{
             //Tabela
             Scroll.setBounds(5,100,1100,800);
             add(Scroll);
-            //Botao
-            Enviar.setBounds(400,80,100,15);
-            add(Enviar);
-            Enviar.addActionListener(new java.awt.event.ActionListener() {
-                @Override
-                public void actionPerformed(java.awt.event.ActionEvent evt){
-                    EnviarAction(evt);
-                }
-            });
             
-            
-            //tabela 
-            tabela.setModel(new javax.swing.table.DefaultTableModel(
+            tabela.setModel(new DefaultTableModel(
             new Object [][]{
             },
             new String[]{
                 "ID","Nome","Data de Nascimento","Altura","Peso"
             }
             ));
+
             
+            //Botao
+            Enviar.setBounds(400,80,100,15);
+            add(Enviar);
+            Enviar.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt){
+                    EnviarAction(evt);
+                    
+                    
+                    try {
+                       Pessoa pessoa = new Pessoa();
+                       pessoa.setNome(PNome.getText());
+                       BancoJDBC banco = new BancoJDBC();
+                       banco.inserir2(pessoa);
+                       JOptionPane.showMessageDialog(rootPane, "Adicionado");
+                     } catch (SQLException e) {
+                          JOptionPane.showMessageDialog(rootPane, "Erro ao adicionar");                  
+                     }               
+                }
+            });
+        
             //JFrame
             setTitle("Agenda"); //Adiciona um titulo ao Frame
             setSize(1200,900); // Define o tamanho do Frame
@@ -138,6 +150,21 @@ public class Agenda extends JFrame{
         
     }
 
+    
+    private void atualizaDadosTabela(){
+        
+    }
+
 }
+/* outra maneira de usar um botão
+ Informações adicionais da aula 
+    
+    Dessa forma toda vez que esse botão for acionado esta mensagem será enviada
+    public class Agenda extends JFrame implements ActionListener{
 
-
+    public void actionPerformed(Action e){
+        if(e.getSource().equals(Enviar){
+            JOptionPane.showMessageDialog(rootPane, "Adicionado");
+        }
+    }   
+*/

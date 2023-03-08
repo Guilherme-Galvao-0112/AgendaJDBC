@@ -20,7 +20,7 @@ public class BancoJDBCTest {
         pessoa.setNome("André");
     }
     @Test
-    public void testeInserir() throws SQLException {
+    public void testeInserir2() throws SQLException {
         BancoJDBC banco = new BancoJDBC();
         Integer inseriu = banco.inserir2(this.pessoa);
         assertTrue(inseriu==0);

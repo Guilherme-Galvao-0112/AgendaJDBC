@@ -9,7 +9,7 @@ public class BancoJDBC {
     
     public BancoJDBC() throws SQLException {
     String url="jdbc:postgresql://localhost:5432/postgres";
-    String senha="1202";
+    String senha="";
     String user="postgres";
     conn=DriverManager.getConnection(url, user, senha);    
    //conn.setAutoCommit(false);// vem true por default
@@ -54,16 +54,8 @@ public class BancoJDBC {
         }
         return 0;
     }
-    public Integer list(Pessoa pessoa) throws SQLException{
-        try {
-            ps=conn.prepareStatement("SELECT * FROM public.pessoa");
-            ps.setString(0, pessoa.getNome());
-            ps.executeLargeUpdate();
-        } catch (SQLException ex) {
-            System.out.println("erro ao fazer select list");
-        } finally {
-            conn.close();
-        }
+    public Integer list() throws SQLException{
+        
         return 0;
     }
     public Integer delete(Pessoa pessoa) throws SQLException{
