@@ -58,6 +58,8 @@ public class Pessoa {
     public Pessoa(){
         peso=0f;
     }
+
+    
     
        
 }

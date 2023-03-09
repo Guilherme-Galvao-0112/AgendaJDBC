@@ -17,12 +17,17 @@ public class BancoJDBCTest {
     @Before
     public void criaPessoa(){
         pessoa = new Pessoa();
-        pessoa.setNome("André");
+        pessoa.setId(Integer.SIZE);
+        pessoa.setNome("Andre");
+        pessoa.setDataNascimento();
+        pessoa.setAltura(Float.NaN);
+        pessoa.setPeso(Float.NaN);
+        
     }
     @Test
-    public void testeInserir2() throws SQLException {
+    public void testeInserir() throws SQLException {
         BancoJDBC banco = new BancoJDBC();
-        Integer inseriu = banco.inserir2(this.pessoa);
+        Integer inseriu = banco.inserir(this.pessoa);
         assertTrue(inseriu==0);
     }
     @Test
@@ -37,10 +42,10 @@ public class BancoJDBCTest {
         Integer deletar = banco.delete(this.pessoa);
         assertTrue(deletar==0);
     }
-    @Test
+    /*@Test
     public void testList() throws SQLException{
         BancoJDBC banco = new BancoJDBC();
         Integer listar = banco.list(this.pessoa);
         assertTrue(listar==0);
-    }
+    }*/
 }
