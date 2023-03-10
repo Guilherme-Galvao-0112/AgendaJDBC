@@ -1,0 +1,10 @@
+CREATE TABLE public.pessoa (
+	id serial4 NOT NULL,
+	nome text NULL,
+	DNS date NULL,
+	Altura float NULL,
+	Peso float NULL,
+	CONSTRAINT pessoa_pkey PRIMARY KEY (id)
+);
+
+SELECT * FROM public.pessoa
