@@ -4,15 +4,18 @@ import java.sql.Date;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.LinkedList;
+import java.util.List;
 import model.Pessoa;
 public class BancoJDBC {
     
     private Connection conn; // Cria uma variavel para estabelecer conexão 
-    PreparedStatement ps;
+    private PreparedStatement ps;
     
     public BancoJDBC() throws SQLException {
     String url="jdbc:postgresql://localhost:5432/postgres"; //Url do banco 
-    String senha="1202"; //Senha do banco 
+    String senha="unigran"; //Senha do banco 
     String user="postgres"; //Nome de usuario do banco
     conn=DriverManager.getConnection(url, user, senha); //Estabelece conexão com o Banco de dados 
    //conn.setAutoCommit(false);// vem true por default
@@ -22,7 +25,6 @@ public class BancoJDBC {
     public Integer inserir(Pessoa pessoa) throws SQLException{
         try {
             ps=conn.prepareStatement("INSERT INTO public.pessoa VALUES(?); ");
-            ps.setInt(0, pessoa.getId());
             ps.setString(1, pessoa.getNome());
             ps.setDate(2, (Date) pessoa.getDataNascimento());
             ps.setFloat(3, pessoa.getAltura());
@@ -36,60 +38,34 @@ public class BancoJDBC {
         return 0;
     }
     
-    public Integer inserir4(Pessoa pessoa) throws SQLException{   
-        ps=conn.prepareStatement("INSERT INTO public.pessoa(nome) VALUES(?);");
-        ps.setString(0, pessoa.getNome());
-        ps.executeLargeUpdate();   
+    public Integer alterar(Pessoa pessoa) throws SQLException{
+     ps=conn.prepareStatement("UPDATE public.pessoa SET nome=? WHERE id=?;");
+        ps.setString(1, pessoa.getNome());
+        ps.executeUpdate();   
         conn.close();//fecha conexão
+        ps.close();
         return 0;
     }
-    public Integer inserir3(Pessoa pessoa) throws SQLException{
-        conn.prepareStatement("INSERT INTO public.pessoa(nome) VALUES('aNDRE');");
-        ps.executeUpdate();
-        conn.commit();//valida execução banco
-        conn.rollback();//volta estado do banco   
-        return null;
-    }
-    public Integer inserir2(Pessoa pessoa) throws SQLException {
-        try{
-            ps=conn.prepareStatement("INSERT INTO public.pessoa(nome) VALUES(?);");
-            ps.setString(0, pessoa.getNome());
-            ps.executeLargeUpdate();
-         }catch(SQLException ex){
-             System.out.print("erro ao inserir");
-         }finally{
-            conn.close();//fecha conexão
-         }
-         return 0;
-    }
-    public Integer update(Pessoa pessoa) throws SQLException{
-        try {
-             ps=conn.prepareStatement("UPDATE public.pessoa SET nome=(?) WHERE coluna2 = (?) ");
-             ps.setString(0, pessoa.getNome());
-             ps.executeLargeUpdate(); 
-        }catch(SQLException ex){
-            System.out.println("erro ao fazer update");
-        }finally {
-            conn.close();
-        
-        }
+     public Integer remover(Pessoa pessoa) throws SQLException{
+     ps=conn.prepareStatement("DELETE FROM public.pessoa WHERE id=?;");
+        ps.setInt(1, pessoa.getId());
+        ps.executeUpdate();   
+        conn.close();//fecha conexão
+        ps.close();
         return 0;
     }
-    public Integer list() throws SQLException{
-        
-        return 0;
+     public List listar() throws SQLException{
+     List pessoas= new LinkedList();
+        ps=conn.prepareStatement("select * from public.pessoa;");
+        ResultSet res = ps.executeQuery();   
+       while(res.next()){
+           Pessoa p = new Pessoa();
+           p.setNome(res.getString("nome"));
+           p.setId(res.getInt("id"));
+           pessoas.add(p);
+       }
+        conn.close();//fecha conexão
+        ps.close();
+        return pessoas;
     }
-    public Integer delete(Pessoa pessoa) throws SQLException{
-        try {
-            ps=conn.prepareStatement("DELETE FROM public.pessoa WHERE id = (?)");
-            ps.setString(0, pessoa.getNome());
-            ps.executeLargeUpdate();
-        } catch (SQLException ex) {
-            System.out.println("erro ao fazer delete");
-        } finally {
-            conn.close();
-        }
-        return 0;
-    }
-    
 }

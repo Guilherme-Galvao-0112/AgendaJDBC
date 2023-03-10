@@ -11,6 +11,11 @@ import java.awt.HeadlessException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.SQLException;
+import java.util.Formatter;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.SizeLimitExceededException;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -26,7 +31,7 @@ import model.Pessoa;
 
     
 
-public class Agenda extends JFrame{
+public class Agenda extends JFrame implements ActionListener{
     
     //Tabela
     private JTable tabela = new JTable();// (X,Y) X = linhas Y = Colunas
@@ -50,26 +55,7 @@ public class Agenda extends JFrame{
     //Botao
     private JButton Enviar = new JButton("Enviar");
         //Adiciona Função ao Botao enviar
-    public void EnviarAction(java.awt.event.ActionEvent evt){
-        String GID = PID.getText();
-        String GNome = PNome.getText();
-        String GDNS = PDNS.getText();
-        String GAltura = PAltura.getText();
-        String GPeso = PPeso.getText(); 
-        
-        DefaultTableModel Retorno = (DefaultTableModel)tabela.getModel();
-        
-        Object[] Infos = new Object[]{
-            GID,GNome,GDNS,GAltura,GPeso
-        };
-        
-        Retorno.addRow(Infos);
-        
-        
-    }
-    
-    
-    
+  
     public Agenda(){
        
         setLayout(null);//Definindo Layout
@@ -103,7 +89,10 @@ public class Agenda extends JFrame{
             //Tabela
             Scroll.setBounds(5,100,1100,800);
             add(Scroll);
-            
+            //Botao
+            Enviar.setBounds(400,80,100,15);
+            add(Enviar);
+            atualizaDadosTabela();
             tabela.setModel(new DefaultTableModel(
             new Object [][]{
             },
@@ -111,28 +100,9 @@ public class Agenda extends JFrame{
                 "ID","Nome","Data de Nascimento","Altura","Peso"
             }
             ));
-
+  
             
-            //Botao
-            Enviar.setBounds(400,80,100,15);
-            add(Enviar);
-            Enviar.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt){
-                    EnviarAction(evt);
-                    
-                    
-                    try {
-                       Pessoa pessoa = new Pessoa();
-                       pessoa.setNome(PNome.getText());
-                       BancoJDBC banco = new BancoJDBC();
-                       banco.inserir2(pessoa);
-                       JOptionPane.showMessageDialog(rootPane, "Adicionado");
-                     } catch (SQLException e) {
-                          JOptionPane.showMessageDialog(rootPane, "Erro ao adicionar");                  
-                     }               
-                }
-            });
+            Enviar.addActionListener(this);
         
             //JFrame
             setTitle("Agenda"); //Adiciona um titulo ao Frame
@@ -149,22 +119,54 @@ public class Agenda extends JFrame{
         
         
     }
+    
+    /**
+     *
+     * @param e
+     */
+    @Override
+    public void actionPerformed(ActionEvent e){
+            try {
+                Pessoa pe = new Pessoa();
+                pe.setNome(PNome.getText());
+                pe.setAltura(Float.parseFloat(PAltura.getText()));
+                pe.setPeso(Float.parseFloat(PPeso.getText()));
+                BancoJDBC banco = new BancoJDBC();
+                banco.inserir(pe);
+                JOptionPane.showMessageDialog(rootPane,"salvar");
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(rootPane,"Deu Ruim ao salvar");
+            } catch (SizeLimitExceededException ex) {
+            Logger.getLogger(Agenda.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        
+    }
 
     
-    private void atualizaDadosTabela(){
+    
+   private void atualizaDadosTabela(){
+      try {
+          String[] columnNames = new String[]{"Id","Nome","Data de Nascimento", "Altura", "Peso"};
+          BancoJDBC banco = new BancoJDBC();
+          List<Pessoa> dados = banco.listar();
+          
+          Object[][] data =
+                  new Object[dados.size()][columnNames.length];
+          
+          for (int i = 0; i < dados.size(); i++) {
+              data[i][0]=dados.get(i).getId();
+              data[i][1]=dados.get(i).getNome();
+          }
+          DefaultTableModel modelo =
+                  new DefaultTableModel(data, columnNames);
+          tabela.setModel(modelo);
+   
+      } catch (SQLException ex) {
+          Logger.getLogger(Agenda.class.getName()).log(Level.SEVERE, null, ex);
+      }
         
     }
 
 }
-/* outra maneira de usar um botão
- Informações adicionais da aula 
-    
-    Dessa forma toda vez que esse botão for acionado esta mensagem será enviada
-    public class Agenda extends JFrame implements ActionListener{
 
-    public void actionPerformed(Action e){
-        if(e.getSource().equals(Enviar){
-            JOptionPane.showMessageDialog(rootPane, "Adicionado");
-        }
-    }   
-*/
