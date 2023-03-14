@@ -37,9 +37,6 @@ public class Agenda extends JFrame implements ActionListener{
     private JTable tabela = new JTable();// (X,Y) X = linhas Y = Colunas
     private JScrollPane Scroll = new JScrollPane(tabela);//Painel para a Tabela
     //Componentes
-        //ID
-    private JLabel ID = new JLabel("ID") ; 
-    private JTextField PID = new JTextField();
         //Nome
     private JLabel Nome = new JLabel("Nome") ;
     private JTextField PNome = new JTextField();
@@ -60,12 +57,6 @@ public class Agenda extends JFrame implements ActionListener{
        
         setLayout(null);//Definindo Layout
         //Definindo posição dos Componentes
-            //ID    (X,Y,Largura,Altura) X=Horizontal Y=Vertical
-            
-            ID.setBounds(5,0,115,15);
-            PID.setBounds(120,0,100,15);
-            add(ID);
-            add(PID);
             //Nome
             Nome.setBounds(5,20,115,15);
             PNome.setBounds(120,20,100,15);
@@ -150,7 +141,6 @@ public class Agenda extends JFrame implements ActionListener{
           String[] columnNames = new String[]{"Id","Nome","Data de Nascimento", "Altura", "Peso"};
           BancoJDBC banco = new BancoJDBC();
           List<Pessoa> dados = banco.listar();
-          
           Object[][] data =
                   new Object[dados.size()][columnNames.length];
           
@@ -164,7 +154,9 @@ public class Agenda extends JFrame implements ActionListener{
    
       } catch (SQLException ex) {
           Logger.getLogger(Agenda.class.getName()).log(Level.SEVERE, null, ex);
-      }
+      } catch (SizeLimitExceededException ex) {
+            Logger.getLogger(Agenda.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
 
