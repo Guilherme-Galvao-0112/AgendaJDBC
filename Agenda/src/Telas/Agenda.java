@@ -8,6 +8,7 @@ import banco.BancoJDBC;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Date;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.SizeLimitExceededException;
@@ -18,6 +19,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
+import javax.swing.table.DefaultTableModel;
 import model.Pessoa;
 
   
@@ -94,7 +96,7 @@ public class Agenda extends JFrame implements ActionListener{
             
             //Tabela
             
-           // atualizaDadosTabela();
+            atualizaDadosTabela();
             setTitle("Agenda JDBC");
             setSize(545,355);
             setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -121,13 +123,13 @@ public class Agenda extends JFrame implements ActionListener{
             //Ação de inserir no Banco de Dados
             BancoJDBC banco = new BancoJDBC();
             banco.inserir(p);
-            //atualizaDadosTabela();
+            atualizaDadosTabela();
                 
             JOptionPane.showMessageDialog(rootPane, "Salvo com sucesso");
         }
     }
+   
     
-    /*
    private void atualizaDadosTabela(){
        
            String[] ColumNames = new String[]{"Id","Nome","Data Nascimento","Altura","Peso"};
@@ -151,7 +153,7 @@ public class Agenda extends JFrame implements ActionListener{
            tabela.setModel(modelo);
            
 }
-  */
+  
 
     @Override
     public void actionPerformed(ActionEvent e) {
