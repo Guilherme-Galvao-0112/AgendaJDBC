@@ -2,8 +2,16 @@ package model;
 
 import java.util.Date;
 import javax.naming.SizeLimitExceededException;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
+@Entity
+@Table(name = "pessoa")
 public class Pessoa {
+    @Id
+    @GeneratedValue
     private Integer id;
     private String nome;
     private Date dataNascimento;
@@ -17,8 +25,7 @@ public class Pessoa {
     public void setId(Integer id) {
         this.id = id;
     }
-
-    
+  
     public String getNome() {
         return nome;
     }
@@ -58,8 +65,5 @@ public class Pessoa {
     public Pessoa(){
         peso=0f;
     }
-
-    
-    
-       
+  
 }

@@ -1,44 +1,41 @@
 package banco;
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.LinkedList;
+
 import java.util.List;
-import javax.naming.SizeLimitExceededException;
-import model.Pessoa;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.EntityTransaction;
+import javax.persistence.Persistence;
+
+
+
 public class BancoJDBC {
+    //Cria conexao com o banco de dados
+    EntityManagerFactory emf = Persistence.createEntityManagerFactory("AgendaPU");
+    EntityManager em = emf.createEntityManager();
+    EntityTransaction etx = em.getTransaction();
     
-    private Connection conn; // Cria uma variavel para estabelecer conexão 
-    private PreparedStatement ps;
-    
-    public BancoJDBC() throws SQLException {
-    String url="jdbc:postgresql://localhost:5432/postgres"; //Url do banco 
-    String senha="unigran"; //Senha do banco 
-    String user="postgres"; //Nome de usuario do banco
-    conn=DriverManager.getConnection(url, user, senha); //Estabelece conexão com o Banco de dados 
-   //conn.setAutoCommit(false);// vem true por default
+    public void inserir(Object o){
+         etx.begin();
+         em.persist(o);
+         etx.commit();
+         em.close();
+    }
+    public void update(Object o){
+        etx.begin();
+        em.merge(o);
+        etx.commit();
+        em.close();
+    }
+    public void remove(Object o){
+        etx.begin();
+        em.remove(o);
+        etx.commit();
+        em.close();
     }
     
-        //Inserir Registro no banco 
-    public Integer inserir(Pessoa pessoa) throws SQLException{
-        try {
-            ps=conn.prepareStatement("INSERT INTO public.pessoa VALUES(?); ");
-            ps.setString(1, pessoa.getNome());
-            ps.setDate(2, (Date) pessoa.getDataNascimento());
-            ps.setFloat(3, pessoa.getAltura());
-            ps.setFloat(4, pessoa.getPeso());
-            ps.executeLargeUpdate();
-        } catch (SQLException ex) {
-            System.out.println("Erro ao inserir");
-        }finally{
-            conn.close();
-        }
-        return 0;
-    }
     
+  
+  /*
     public Integer alterar(Pessoa pessoa) throws SQLException{
      ps=conn.prepareStatement("UPDATE public.pessoa SET nome=? WHERE id=?;");
         ps.setString(1, pessoa.getNome());
@@ -58,7 +55,7 @@ public class BancoJDBC {
         ps.close();
         return 0;
     }
-     public List listar() throws SQLException, SizeLimitExceededException{
+     public List listar() throws SQLException{
      List pessoas= new LinkedList();
         ps=conn.prepareStatement("select * from public.pessoa;");
         ResultSet res = ps.executeQuery();   
@@ -68,11 +65,16 @@ public class BancoJDBC {
            p.setNome(res.getString("nome"));
            p.setDataNascimento(res.getDate("dns"));
            p.setAltura(res.getFloat("altura"));
-           p.setPeso(res.getFloat("peso"));
+           try {
+                    p.setPeso(res.getFloat("peso"));   
+                } catch (SizeLimitExceededException ex) {
+                    Logger.getLogger(Agenda.class.getName()).log(Level.SEVERE, null, ex);
+                }
            pessoas.add(p);
        }
         conn.close();//fecha conexão
         ps.close();
         return pessoas;
     }
+*/
 }
